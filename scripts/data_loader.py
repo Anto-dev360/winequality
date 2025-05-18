@@ -97,3 +97,20 @@ def load_wine_dataframes():
     df_red = pd.read_csv(red_path, sep=";")
     df_white = pd.read_csv(white_path, sep=";")
     return df_red, df_white
+
+def merge_wine_dataframes(df_red, df_white):
+    """
+    Merge red and white wine DataFrames into a single DataFrame.
+
+    Adds a 'color' column to distinguish between red and white wines.
+
+    Args:
+        df_red (pd.DataFrame): DataFrame containing red wine data.
+        df_white (pd.DataFrame): DataFrame containing white wine data.
+
+    Returns:
+        pd.DataFrame: Merged DataFrame with an added 'color' column.
+    """
+    df_red["color"] = "red"
+    df_white["color"] = "white"
+    return pd.concat([df_red, df_white], ignore_index=True)
