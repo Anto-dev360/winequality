@@ -1,12 +1,18 @@
 """
-Author : Anthony Morin
-Description : Loading data.
+data_loader.py
+
+Functions to load and manages wine dataset
+
+Author: Anthony Morin
+Created: 2025-05-18
+Project: Wine Quality Prediction - Streamlit UI
+License: MIT
 """
 
-import os
 import shutil
-from kaggle.api.kaggle_api_extended import KaggleApi
+import streamlit as st
 import pandas as pd
+from kaggle.api.kaggle_api_extended import KaggleApi
 from pathlib import Path
 
 from config.settings import (
@@ -32,7 +38,7 @@ def setup_kaggle_credentials():
 
     user_kaggle_dir.mkdir(parents=True, exist_ok=True)
     shutil.copy(project_kaggle_path, user_kaggle_path)
-    print(f"✅ kaggle.json copied to: {user_kaggle_path}")
+    st.toast(f"kaggle.json copied to: {user_kaggle_path}", icon="✅")
 
 def authenticate_kaggle():
     """
@@ -68,14 +74,11 @@ def download_wine_dataset():
     Downloads and unzips the dataset to the data/raw directory.
     """
     if is_dataset_present():
-        print("✅ Dataset already present. Skipping download.")
         return
 
-    print("📥 Downloading the dataset from Kaggle...")
     DOWNLOAD_DIR.mkdir(parents=True, exist_ok=True)
     api = authenticate_kaggle()
     api.dataset_download_files(DATASET_NAME, path=DOWNLOAD_DIR, unzip=True)
-    print("✅ Download complete and files extracted.")
 
 
 def load_wine_dataframes():
@@ -114,3 +117,18 @@ def merge_wine_dataframes(df_red, df_white):
     df_red["color"] = "red"
     df_white["color"] = "white"
     return pd.concat([df_red, df_white], ignore_index=True)
+
+
+@st.cache_data
+def fetch_data():
+    """
+    Cacheable version that downloads and loads the dataset without Streamlit elements.
+
+    Returns:
+    pd.DataFrame: The merged dataset containing both red and white wines.
+                    Returns an empty DataFrame if an error occurs.
+    """
+    download_wine_dataset()
+    df_red, df_white = load_wine_dataframes()
+    df = merge_wine_dataframes(df_red, df_white)
+    return df

@@ -1,6 +1,12 @@
 """
-Author : Anthony Morin
-Description : Application constants.
+settings.py
+
+Application constants.
+
+Author: Anthony Morin
+Created: 2025-05-18
+Project: Wine Quality Prediction - Streamlit UI
+License: MIT
 """
 
 from pathlib import Path

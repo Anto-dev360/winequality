@@ -1,10 +1,10 @@
 # 🍷 Wine Quality Prediction
 
-> Machine Learning project to predict the quality of wines (red & white) using various classification algorithms and exploratory data analysis (EDA).
+> An interactive educational Streamlit application that visualizes and classifies red and white wine quality using machine learning and exploratory data analysis (EDA).
 
 ## 📌 Description
 
-This project uses the **Wine Quality dataset** (from UCI/Kaggle) to build machine learning models that predict the **quality** of a wine based on its physicochemical characteristics. It is built using **Python**, **scikit-learn**, **pandas**, **matplotlib**, and **seaborn**.
+This project uses the **Wine Quality dataset** (from Kaggle) to build machine learning models that predict the **quality** of a wine based on its physicochemical characteristics. It is built using **Python**, **scikit-learn**, **pandas**, **matplotlib**, and **seaborn**.
 
 Key goals:
 
@@ -42,6 +42,15 @@ Target variable:
 
 - `quality` (integer score between 0 and 10)
 
+# UI tabs:
+- **About**: Description and goals of the application.
+- **Dataset Viewer**: Interactive view and download of merged dataset.
+- **EDA**: Distribution and boxplots of wine features.
+- **Skewness & Kurtosis**: Shape characteristics of distributions.
+- **Bivariate Analysis**: Relationship between features and wine quality.
+- **Model Results**: Accuracy scores for multiple classifiers.
+- **Decision Tree**: Visual decision tree to explain predictions.
+
 ## ⚙️ Setup & Installation
 
 ### 1. Clone the repository
@@ -69,12 +78,37 @@ mv /path/to/kaggle.json ~/.kaggle/
 chmod 600 ~/.kaggle/kaggle.json
 ```
 
+### 4. Optional: Install Graphviz (for Decision Tree export)
+
+To visualize and export the decision tree as a PDF (`wine.pdf`), make sure the Graphviz system executable is installed.
+
+#### Windows:
+1. Download the installer: [https://graphviz.org/download/](https://graphviz.org/download/)
+2. Run the installer and choose the default location (e.g. `C:\Program Files\Graphviz`)
+3. Add the Graphviz binary folder to your system PATH:
+    - Add: `C:\Program Files\Graphviz\bin`
+
+4. Restart your terminal or IDE.
+
+#### macOS (Homebrew):
+```bash
+brew install graphviz
+```
+
+#### Linux (Debian/Ubuntu):
+```bash
+sudo apt-get install graphviz
+```
+
+You can test the installation with:
+```bash
+dot -V
+```
+
 ## 🚀 How to Run
 
-Run the analysis pipeline using:
-
 ```bash
-python main.py
+streamlit run app.py
 ```
 
 This will:
@@ -84,6 +118,7 @@ This will:
 - Compute skewness and kurtosis
 - Visualize feature relationships with wine quality
 - Train and evaluate 5 classifiers
+- Display result with streamlit
 
 ## 🧠 Models Used
 
@@ -113,6 +148,7 @@ The project includes:
 ├── main.py                  # Entry point of the project
 ├── scripts/
 |   ├── analysis_utils.py    # Modular functions for EDA and modeling
+|   ├── visualization.py     # Modular functions for result display with streamlit
 |   └── data_loader.py       # Modular functions for data loading
 ├── config
 |   └── settings.py          # Application constants

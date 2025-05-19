@@ -1,17 +1,24 @@
 """
-Author : Anthony Morin
-Description :
-    Wine Quality Analysis and Classification
+analysis_utils.py
 
-    This module provides functions for exploratory data analysis (EDA) and machine learning
-    on the Wine Quality dataset from Kaggle. It includes functionality for previewing,
-    merging, visualizing distributions, analyzing bivariate relationships, and training
-    various classification models to predict wine quality.
+Wine Quality Analysis and Classification
+
+This module provides functions for exploratory data analysis (EDA) and machine learning
+on the Wine Quality dataset from Kaggle. It includes functionality for previewing,
+merging, visualizing distributions, analyzing bivariate relationships, and training
+various classification models to predict wine quality.
+
+Author: Anthony Morin
+Created: 2025-05-18
+Project: Wine Quality Prediction - Streamlit UI
+License: MIT
 """
 
+import shutil
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import streamlit as st
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn import svm, tree
@@ -27,8 +34,10 @@ def preview_data(df_red, df_white):
         df_red (pd.DataFrame): Red wine dataset.
         df_white (pd.DataFrame): White wine dataset.
     """
-    print("Red wine preview:\n", df_red.head(3))
-    print("White wine preview:\n", df_white.head(3))
+    st.subheader("Red wine preview")
+    st.dataframe(df_red.head(3))
+    st.subheader("White wine preview")
+    st.dataframe(df_white.head(3))
 
 
 def plot_quality_distribution(df):
@@ -126,7 +135,8 @@ def prepare_data(df):
 
 def train_models(X_train, X_test, y_train, y_test, feature_names):
     """
-    Train multiple classification models and print their accuracy. Export a decision tree visualization.
+    Train multiple classification models and display their accuracy.
+    Export a decision tree visualization.
 
     Args:
         X_train (pd.DataFrame): Training features.
@@ -146,17 +156,25 @@ def train_models(X_train, X_test, y_train, y_test, feature_names):
     for name, model in models.items():
         model.fit(X_train, y_train)
         score = model.score(X_test, y_test)
-        print(f"{name} accuracy: {score:.2f}")
+        st.success(f"{name} accuracy: {score:.2f}")
 
         if name == "DecisionTree":
             dot_data = tree.export_graphviz(
                 model,
                 out_file=None,
                 feature_names=feature_names,
-                class_names=y_train.name,
+                class_names=[str(c) for c in sorted(y_train.unique())],
                 filled=True,
                 rounded=True,
                 special_characters=True
             )
             graph = graphviz.Source(dot_data)
-            graph.render("wine")
+
+            if shutil.which("dot"):
+                try:
+                    graph.render("wine")
+                    st.toast("✅ Decision tree rendered and saved as 'wine.pdf'")
+                except Exception as e:
+                    st.warning(f"⚠️ Failed to render decision tree: {e}")
+            else:
+                st.warning("⚠️ Graphviz not found — skipping decision tree rendering.")
