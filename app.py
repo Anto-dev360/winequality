@@ -23,24 +23,15 @@ Project: Wine Quality Prediction - Streamlit UI
 License: MIT
 """
 
-import streamlit as st
 import pandas as pd
-from scripts.data_loader import (
-    download_wine_dataset,
-    load_wine_dataframes,
-    merge_wine_dataframes,
-    is_dataset_present,
-    fetch_data,
-)
-from scripts.visualization import (
-    show_about,
-    show_dataset,
-    show_eda,
-    show_skew_kurtosis,
-    show_bivariate_analysis,
-    show_model_results,
-    show_decision_tree
-)
+import streamlit as st
+
+from scripts.data_loader import (download_wine_dataset, fetch_data,
+                                 is_dataset_present, load_wine_dataframes,
+                                 merge_wine_dataframes)
+from scripts.visualization import (show_about, show_bivariate_analysis,
+                                   show_dataset, show_decision_tree, show_eda,
+                                   show_model_results, show_skew_kurtosis)
 
 
 def load_data():
@@ -67,6 +58,7 @@ def load_data():
         st.error(f"❌ Failed to load data: {e}")
         return pd.DataFrame()
 
+
 def main():
     """
     Main function for launching the Streamlit web application.
@@ -90,15 +82,18 @@ def main():
     st.set_page_config(page_title="Wine Quality Explorer", layout="wide")
 
     st.sidebar.title("Navigation")
-    page = st.sidebar.radio("Go to", [
-        "About",
-        "Dataset Viewer",
-        "EDA",
-        "Skewness & Kurtosis",
-        "Bivariate Analysis",
-        "Model Results",
-        "Decision Tree"
-    ])
+    page = st.sidebar.radio(
+        "Go to",
+        [
+            "About",
+            "Dataset Viewer",
+            "EDA",
+            "Skewness & Kurtosis",
+            "Bivariate Analysis",
+            "Model Results",
+            "Decision Tree",
+        ],
+    )
 
     df = load_data()
 
@@ -116,6 +111,7 @@ def main():
         show_model_results(df)
     elif page == "Decision Tree":
         show_decision_tree(df)
+
 
 if __name__ == "__main__":
     main()

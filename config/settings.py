@@ -15,3 +15,4 @@ from pathlib import Path
 DATASET_NAME = "brendan45774/wine-quality"
 EXPECTED_FILES = ["winequality-red.csv", "winequality-white.csv"]
 DOWNLOAD_DIR = Path("data/raw")
+RESULT_DIR = Path("data/results")

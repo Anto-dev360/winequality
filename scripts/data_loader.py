@@ -10,16 +10,14 @@ License: MIT
 """
 
 import shutil
-import streamlit as st
-import pandas as pd
-from kaggle.api.kaggle_api_extended import KaggleApi
 from pathlib import Path
 
-from config.settings import (
-    DATASET_NAME,
-    EXPECTED_FILES,
-    DOWNLOAD_DIR,
-)
+import pandas as pd
+import streamlit as st
+from kaggle.api.kaggle_api_extended import KaggleApi
+
+from config.settings import DATASET_NAME, DOWNLOAD_DIR, EXPECTED_FILES
+
 
 def setup_kaggle_credentials():
     """
@@ -34,11 +32,14 @@ def setup_kaggle_credentials():
     user_kaggle_path = user_kaggle_dir / "kaggle.json"
 
     if not project_kaggle_path.exists():
-        raise FileNotFoundError("The file '.kaggle/kaggle.json' was not found in the project directory.")
+        raise FileNotFoundError(
+            "The file '.kaggle/kaggle.json' was not found in the project directory."
+        )
 
     user_kaggle_dir.mkdir(parents=True, exist_ok=True)
     shutil.copy(project_kaggle_path, user_kaggle_path)
     st.toast(f"kaggle.json copied to: {user_kaggle_path}", icon="✅")
+
 
 def authenticate_kaggle():
     """
@@ -66,6 +67,7 @@ def is_dataset_present():
         bool: True if both CSV files exist, False otherwise.
     """
     return all((DOWNLOAD_DIR / file).exists() for file in EXPECTED_FILES)
+
 
 def download_wine_dataset():
     """
@@ -95,11 +97,14 @@ def load_wine_dataframes():
     white_path = DOWNLOAD_DIR / "winequality-white.csv"
 
     if not red_path.exists() or not white_path.exists():
-        raise FileNotFoundError("Data files are missing. Please download the dataset first.")
+        raise FileNotFoundError(
+            "Data files are missing. Please download the dataset first."
+        )
 
     df_red = pd.read_csv(red_path, sep=";")
     df_white = pd.read_csv(white_path, sep=";")
     return df_red, df_white
+
 
 def merge_wine_dataframes(df_red, df_white):
     """
