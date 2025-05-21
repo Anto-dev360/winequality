@@ -118,6 +118,7 @@ This will:
 - Compute skewness and kurtosis
 - Visualize feature relationships with wine quality
 - Train and evaluate 5 classifiers
+- Predict wine quality
 - Display result with streamlit
 
 ## 🧠 Models Used

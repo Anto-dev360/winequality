@@ -115,6 +115,8 @@ def prepare_data(df):
     return train_test_split(X, y, test_size=0.20)
 
 
+trained_models = {}  # Global dictionary to store trained models and scalers
+
 def train_models(X_train, X_test, y_train, y_test, feature_names):
     """
     Train multiple classification models and report their accuracy.
@@ -148,9 +150,12 @@ def train_models(X_train, X_test, y_train, y_test, feature_names):
             if name in ["LogisticRegression", "SVM", "SGD"]:
                 model.fit(X_train_scaled, y_train)
                 score = model.score(X_test_scaled, y_test)
+                trained_models[name] = {"model": model, "scaler": scaler}
             else:
                 model.fit(X_train, y_train)
                 score = model.score(X_test, y_test)
+                trained_models[name] = {"model": model, "scaler": None}
+
             st.success(f"{name} accuracy: {score:.2f}")
         except Exception as e:
             st.warning(f"⚠️ {name} failed: {e}")
@@ -185,3 +190,4 @@ def train_models(X_train, X_test, y_train, y_test, feature_names):
                     st.warning("⚠️ Graphviz not found — skipping tree rendering.")
             except Exception as e:
                 st.warning(f"⚠️ Could not export decision tree: {e}")
+            pass

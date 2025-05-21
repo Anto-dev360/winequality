@@ -26,12 +26,12 @@ License: MIT
 import pandas as pd
 import streamlit as st
 
-from scripts.data_loader import (download_wine_dataset, fetch_data,
-                                 is_dataset_present, load_wine_dataframes,
-                                 merge_wine_dataframes)
+from scripts.data_loader import (fetch_data,
+                                 is_dataset_present)
 from scripts.visualization import (show_about, show_bivariate_analysis,
                                    show_dataset, show_decision_tree, show_eda,
-                                   show_model_results, show_skew_kurtosis)
+                                   show_model_results, show_skew_kurtosis,
+                                   show_predict)
 
 
 def load_data():
@@ -92,6 +92,7 @@ def main():
             "Bivariate Analysis",
             "Model Results",
             "Decision Tree",
+            "Predict",
         ],
     )
 
@@ -111,6 +112,8 @@ def main():
         show_model_results(df)
     elif page == "Decision Tree":
         show_decision_tree(df)
+    elif page == "Predict":
+        show_predict(df)
 
 
 if __name__ == "__main__":

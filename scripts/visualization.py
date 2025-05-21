@@ -28,8 +28,10 @@ import seaborn as sns
 import streamlit as st
 
 from config.settings import RESULT_DIR
-from scripts.analysis_utils import (compute_skew_kurtosis, prepare_data,
-                                    train_models)
+from scripts.analysis_utils import (compute_skew_kurtosis,
+                                    prepare_data,
+                                    train_models,
+                                    trained_models)
 
 
 def show_about():
@@ -55,6 +57,7 @@ def show_about():
     - Analyze distributions, relationships, and statistical properties of the features.
     - Train multiple machine learning models (Logistic Regression, SVM, Naive Bayes, Decision Tree...).
     - Understand model performance and how features impact predictions.
+    - Launch a prediction for new datas with selected models.
 
     ---
     ### 🧰 Key Libraries & Tools
@@ -76,6 +79,7 @@ def show_about():
     - **Bivariate Analysis**: Explore feature vs quality relationships.
     - **Model Results**: Train and evaluate ML models.
     - **Decision Tree**: View the tree structure used for classification.
+    - **Predict**: Launch a prediction on new datas.
 
     > This project aims to be an accessible and practical introduction to machine learning on real-world data.
     """
@@ -323,3 +327,73 @@ def show_decision_tree(df):
             )
     else:
         st.warning("📁 PDF not found. Make sure the decision tree has been generated.")
+
+def show_predict(df):
+    """
+    Display prediction interface where users can input wine features manually or upload a CSV file.
+
+    This tool allows real-time quality prediction using a selected trained model.
+
+    Args:
+        df (pd.DataFrame): Dataset used to retrieve feature names for prediction.
+    """
+    st.header("🔮 Predict Wine Quality")
+
+    st.markdown("""
+    You can enter the physicochemical properties of a wine manually **or** upload a `.csv` file
+    with the same format as the dataset (semicolon-separated `;`).
+
+    Choose a trained model from the list and get the predicted quality of your wine sample(s).
+
+    ---
+    """)
+
+    feature_names = df.select_dtypes(include='number').drop(columns='quality').columns.tolist()
+    model_names = list(trained_models.keys())
+
+    if not model_names:
+        st.warning("⚠️ Please train models first in the 'Model Results' tab before making predictions.")
+        return
+
+    selected_model_name = st.selectbox("Select model to use for prediction", model_names)
+    model_info = trained_models[selected_model_name]
+    model = model_info["model"]
+    scaler = model_info["scaler"]
+
+    st.subheader("📥 Upload CSV")
+    uploaded_file = st.file_uploader("Upload a CSV file with features", type=["csv"])
+    if uploaded_file:
+        try:
+            df_input = pd.read_csv(uploaded_file, sep=';')
+            if all(f in df_input.columns for f in feature_names):
+                X_input = df_input[feature_names]
+                X_scaled = scaler.transform(X_input) if scaler else X_input
+                predictions = model.predict(X_scaled)
+                df_input['Predicted Quality'] = predictions
+                st.success("✅ Prediction completed!")
+                st.dataframe(df_input)
+            else:
+                st.error("❌ Invalid file format. Please include all required feature columns.")
+        except Exception as e:
+            st.error(f"❌ Failed to read or predict: {e}")
+
+    st.markdown("---")
+    st.subheader("📝 Manual Input")
+    manual_input = []
+    for feat in feature_names:
+        val = st.number_input(f"{feat}", value=0.0, format="%.3f")
+        manual_input.append(val)
+
+    if st.button("Predict Quality"):
+        try:
+            X_manual = pd.DataFrame([manual_input], columns=feature_names)
+            X_scaled = scaler.transform(X_manual) if scaler else X_manual
+            result = model.predict(X_scaled)[0]
+            st.success(f"📊 Predicted wine quality: {result}")
+        except Exception as e:
+            st.error(f"❌ Prediction failed: {e}")
+
+    st.markdown("---")
+    st.subheader("📄 CSV Template Example")
+    template_df = pd.DataFrame([{feat: 0.0 for feat in feature_names}])
+    st.code(template_df.to_csv(index=False, sep=';'))
